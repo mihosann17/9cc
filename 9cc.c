@@ -22,7 +22,6 @@ void error_at(char *loc, char *fmt, ...) {
   exit(1);
 }
 
-
 //トークンの種類
 typedef enum{
   TK_RESERVED,  //記号
@@ -106,7 +105,7 @@ Token *tokenize(char *p){
       continue;
     }
 
-    error_at(token->str, "トークナイズできません");
+    error_at(p, "トークナイズできません");
   }
   
   new_token(TK_EOF, cur, p);
