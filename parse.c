@@ -60,6 +60,16 @@ bool at_eof(){
   return token->kind == TK_EOF;
 }
 
+// 変数として有効な文字か
+bool is_ident_char(char c) {
+  if ( ('a' <= c) && (c <= 'z'))
+    return true;
+  if ( ('A' <= c) && (c <= 'Z'))
+    return true;
+  if ( c == '_')
+    return true;
+  return false;
+}
 
 Node *new_node(NodeKind kind, Node *lhs, Node *rhs) {
   Node *node = calloc(1, sizeof(Node));
@@ -229,7 +239,7 @@ Token *tokenize(char *p){
       continue;
     }
 
-    if ('a' <= *p && *p <= 'z') {
+    if (is_ident_char(*p)) {
       cur = new_token(TK_IDENT, cur, p++, 1);
       cur->len = 1;
       continue;
