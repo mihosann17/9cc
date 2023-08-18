@@ -2,12 +2,15 @@
 
 // 入力プログラム
 char *user_input;
+
 //現在着目しているトークン
 Token *token;
+
 //コード全体
 Node *code[100];
+
 //ローカル変数
-LVar *locals;
+LVar *locals = NULL;
 
 int main(int argc, char **argv) {
   if (argc != 2) {
@@ -28,10 +31,13 @@ int main(int argc, char **argv) {
   printf("main:\n");
 
   // プロローグ
-  // 変数26個分の領域を確保する
+  // OLD:変数26個分の領域を確保する
+  // 変数の個数分だけ領域を確保する
+  int number_of_offset = count_lvar();
   printf("  push rbp\n");
   printf("  mov rbp, rsp\n");
-  printf("  sub rsp, 208\n");
+//  printf("  sub rsp, 208\n");
+  printf("  sub rsp, %d\n", number_of_offset * 8);
 
   // 抽象構文木を下りながらコード生成
 

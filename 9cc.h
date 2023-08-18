@@ -73,6 +73,8 @@ Token *tokenize(char *p);
 Node *expr();
 void gen(Node *node);
 void program();
+// ローカル変数の数を返す
+int count_lvar();
 
 
 
