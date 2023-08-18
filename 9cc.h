@@ -63,7 +63,6 @@ Token *tokenize(char *p);
 Node *expr();
 void gen(Node *node);
 void program();
-void error(char *fmt, ...);
 
 
 

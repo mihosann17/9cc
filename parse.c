@@ -14,21 +14,6 @@ void error_at(char *loc, char *fmt, ...) {
   exit(1);
 }
 
-Node *new_node(NodeKind kind, Node *lhs, Node *rhs) {
-  Node *node = calloc(1, sizeof(Node));
-  node->kind = kind;
-  node->lhs = lhs;
-  node->rhs = rhs;
-  return node;
-}
-
-Node *new_node_num(int val) {
-  Node *node = calloc(1, sizeof(Node));
-  node->kind = ND_NUM;
-  node->val = val;
-  return node;
-}
-
 //次のトークンが期待している記号の時には、トークンを１つ読み進めて
 //真を返す。それ以外の場合には偽を返す。
 bool consume(char *op) {
@@ -38,6 +23,17 @@ bool consume(char *op) {
     return false;
   token = token->next;
   return true;
+}
+
+//次のトークンが変数なら１つ読み進めて
+//元のトークンを返す
+//それ以外ならNULL
+Token *consume_ident() {
+  if (token->kind != TK_IDENT)
+    return NULL;
+  Token *cur = token;
+  token = token->next;
+  return cur;  
 }
 
 //次のトークンが期待している記号の時には、トークンを１つ読み進める。
@@ -65,11 +61,34 @@ bool at_eof(){
 }
 
 
+Node *new_node(NodeKind kind, Node *lhs, Node *rhs) {
+  Node *node = calloc(1, sizeof(Node));
+  node->kind = kind;
+  node->lhs = lhs;
+  node->rhs = rhs;
+  return node;
+}
+
+Node *new_node_num(int val) {
+  Node *node = calloc(1, sizeof(Node));
+  node->kind = ND_NUM;
+  node->val = val;
+  return node;
+}
+
 Node *primary(){
   // 次のトークンが"("なら、"(" expr ")"のはず
   if(consume("(")) {
     Node *node = expr();
     expect(")");
+    return node;
+  }
+
+  Token *tok = consume_ident();
+  if (tok) {
+    Node *node = calloc(1, sizeof(Node));
+    node->kind = ND_LVAR;
+    node->offset = (tok->str[0] - 'a' + 1) * 8;
     return node;
   }
 
@@ -142,10 +161,29 @@ Node *equality(){
   }
 }
 
+Node *assign() {
+  Node *node = equality();
+  if (consume("="))
+    node = new_node(ND_ASSIGN, node, assign());
+  return node;
+}
+
 
 Node *expr() {
-  Node *node = equality();
+  return assign();
+}
+
+Node *stmt() {
+  Node *node = expr();
+  expect(";");
   return node;
+}
+
+void program() {
+  int i = 0;
+  while (!at_eof())
+    code[i++] = stmt();
+  code[i] = NULL;
 }
 
 //新しいトークンを作成してcurに繋げる
@@ -179,7 +217,8 @@ Token *tokenize(char *p){
 
     if (*p == '+' || *p == '-' || *p == '*' ||
         *p == '/' || *p == '(' || *p == ')' ||
-        *p == '<' || *p == '>') {
+        *p == '<' || *p == '>' || *p == ';' ||
+        *p == '=') {
       cur = new_token(TK_RESERVED, cur, p++, 1);
       continue;
     }
@@ -187,6 +226,12 @@ Token *tokenize(char *p){
     if (isdigit(*p)) {
       cur = new_token(TK_NUM, cur, p, 1);
       cur->val = strtol(p, &p, 10);
+      continue;
+    }
+
+    if ('a' <= *p && *p <= 'z') {
+      cur = new_token(TK_IDENT, cur, p++, 1);
+      cur->len = 1;
       continue;
     }
 
