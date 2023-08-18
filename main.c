@@ -2,12 +2,12 @@
 
 // 入力プログラム
 char *user_input;
-
 //現在着目しているトークン
 Token *token;
-
 //コード全体
 Node *code[100];
+//ローカル変数
+LVar *locals;
 
 int main(int argc, char **argv) {
   if (argc != 2) {
