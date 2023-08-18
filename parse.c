@@ -71,6 +71,16 @@ bool is_ident_char(char c) {
   return false;
 }
 
+// 識別子の文字数を調べる
+int count_ident_len(char *p) {
+  int len = 0;
+  while (is_ident_char(*p)) {
+    len++;
+    p++;
+  }
+  return len;
+}
+
 Node *new_node(NodeKind kind, Node *lhs, Node *rhs) {
   Node *node = calloc(1, sizeof(Node));
   node->kind = kind;
@@ -206,6 +216,15 @@ Token *new_token(TokenKind kind, Token *cur, char *str, int len){
   return tok;
 }
 
+Token *new_token_ident(TokenKind kind, Token *cur, char *str) {
+  Token *tok = calloc(1, sizeof(Token));
+  tok-> kind = kind;
+  tok->str = str;
+  tok->len = count_ident_len(str);
+  cur->next = tok;
+  return tok;
+}
+
 Token *tokenize(char *p){
   Token head;
   head.next = NULL;
@@ -237,8 +256,8 @@ Token *tokenize(char *p){
     }
 
     if (is_ident_char(*p)) {
-      cur = new_token(TK_IDENT, cur, p++, 1);
-      cur->len = 1;
+      cur = new_token_ident(TK_IDENT, cur, p);
+      p += cur->len;
       continue;
     }
 
