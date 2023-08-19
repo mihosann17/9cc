@@ -77,6 +77,7 @@ void gen(Node *node);
 void program();
 // ローカル変数の数を返す
 int count_lvar();
+void error(char *fmt, ...);
 void error_at(char *loc, char *fmt, ...);
 
 

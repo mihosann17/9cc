@@ -11,15 +11,25 @@ bool consume(char *op) {
   return true;
 }
 
-//次のトークンが変数なら１つ読み進めて
-//元のトークンを返す
-//それ以外ならNULL
+// 次のトークンが変数なら１つ読み進めて
+// 元のトークンを返す
+// それ以外ならNULL
 Token *consume_ident() {
   if (token->kind != TK_IDENT)
     return NULL;
   Token *cur = token;
   token = token->next;
   return cur;  
+}
+
+// 次のトークンが""return"なら一つ読み進めて
+// 真を返す
+// それ以外なら偽を返す
+bool consume_return() {
+  if (token->kind != TK_RETURN)
+    return false;
+  token = token->next;
+  return true;
 }
 
 //次のトークンが期待している記号の時には、トークンを１つ読み進める。
@@ -198,7 +208,7 @@ Node *expr() {
 Node *stmt() {
   Node *node;
 
-  if (consume("return")) {
+  if (consume_return()) {
     node = calloc(1, sizeof(Node));
     node->kind = ND_RETURN;
     node->lhs = expr();
@@ -206,7 +216,8 @@ Node *stmt() {
     node = expr();
   }
 
-  expect(";");
+  if (!consume(";"))
+    error_at(token->str, "';'ではないトークンです");
 
   return node;
 }
