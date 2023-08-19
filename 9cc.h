@@ -43,6 +43,7 @@ typedef enum{
   ND_NOT,   // != 
   ND_ASSIGN,// =
   ND_LVAR,  // ローカル変数 
+  ND_RETURN,// return
 } NodeKind;
 
 
@@ -76,6 +77,7 @@ void gen(Node *node);
 void program();
 // ローカル変数の数を返す
 int count_lvar();
+void error_at(char *loc, char *fmt, ...);
 
 
 
