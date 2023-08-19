@@ -1,5 +1,16 @@
 #include "9cc.h"
 
+//新しいトークンを作成してcurに繋げる
+Token *new_token(TokenKind kind, Token *cur, char *str, int len){
+  Token *tok = calloc(1, sizeof(Token));
+  tok->kind = kind;
+  tok->str = str;
+  tok->len = len;
+  cur-> next = tok;
+  return tok;
+}
+
+
 // 変数として有効な文字か
 int is_alnum(char c) {
   return  ('a' <= c && c <= 'z') ||
@@ -18,15 +29,6 @@ int count_ident_len(char *p) {
   return len;
 }
 
-//新しいトークンを作成してcurに繋げる
-Token *new_token(TokenKind kind, Token *cur, char *str, int len){
-  Token *tok = calloc(1, sizeof(Token));
-  tok->kind = kind;
-  tok->str = str;
-  tok->len = len;
-  cur-> next = tok;
-  return tok;
-}
 
 Token *tokenize(char *p){
   Token head;
@@ -63,6 +65,24 @@ Token *tokenize(char *p){
       cur = new_token(TK_RETURN, cur, p, 6);
       p += 6;
       continue;
+    }
+
+    if (strncmp(p, "if", 2) == 0 && count_ident_len(p) == 2) {
+        cur = new_token(TK_IF, cur, p, 2);
+        p += 2;
+        continue;
+    }
+
+    if (strncmp(p, "while", 5) == 0 && count_ident_len(p) == 5) {
+        cur = new_token(TK_WHILE, cur, p, 5);
+        p += 5;
+        continue;
+    }
+
+    if (strncmp(p, "for", 3) == 0 && count_ident_len(p) == 3) {
+        cur = new_token(TK_FOR, cur, p, 3);
+        p += 3;
+        continue;
     }
 
     if (is_alnum(*p)) {
