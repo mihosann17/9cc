@@ -28,15 +28,6 @@ Token *new_token(TokenKind kind, Token *cur, char *str, int len){
   return tok;
 }
 
-Token *new_token_ident(TokenKind kind, Token *cur, char *str) {
-  Token *tok = calloc(1, sizeof(Token));
-  tok-> kind = kind;
-  tok->str = str;
-  tok->len = count_ident_len(str);
-  cur->next = tok;
-  return tok;
-}
-
 Token *tokenize(char *p){
   Token head;
   head.next = NULL;
@@ -67,14 +58,15 @@ Token *tokenize(char *p){
       continue;
     }
 
-    if (strncmp(p, "return", 6) == 0 && !is_alnum(p[6])) {
+    if (strncmp(p, "return", 6) == 0 && count_ident_len(p) == 6) {
+
       cur = new_token(TK_RETURN, cur, p, 6);
       p += 6;
       continue;
     }
 
     if (is_alnum(*p)) {
-      cur = new_token_ident(TK_IDENT, cur, p);
+      cur = new_token(TK_IDENT, cur, p, count_ident_len(p));
       p += cur->len;
       continue;
     }
