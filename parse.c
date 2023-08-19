@@ -61,20 +61,17 @@ bool at_eof(){
 }
 
 // 変数として有効な文字か
-bool is_ident_char(char c) {
-  if ( ('a' <= c) && (c <= 'z'))
-    return true;
-  if ( ('A' <= c) && (c <= 'Z'))
-    return true;
-  if ( c == '_')
-    return true;
-  return false;
+int is_alnum(char c) {
+  return  ('a' <= c && c <= 'z') ||
+          ('A' <= c && c <= 'Z') ||
+          ('0' <= c && c <= '9') ||
+          (c == '_');
 }
 
 // 識別子の文字数を調べる
 int count_ident_len(char *p) {
   int len = 0;
-  while (is_ident_char(*p)) {
+  while (is_alnum(*p)) {
     len++;
     p++;
   }
@@ -291,7 +288,7 @@ Token *tokenize(char *p){
       continue;
     }
 
-    if (is_ident_char(*p)) {
+    if (is_alnum(*p)) {
       cur = new_token_ident(TK_IDENT, cur, p);
       p += cur->len;
       continue;
