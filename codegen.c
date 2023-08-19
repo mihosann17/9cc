@@ -81,7 +81,18 @@ void gen(Node *node){
       printf("  setne al\n");
       printf("  movzb rax, al\n");
       break;
+    case ND_RETURN:
+      gen(node->lhs);
+      printf("  pop rax\n");
+      printf("  mov rsp, rbp\n");
+      printf("  pop rbp\n");
+      printf("  ret\n");
+      return;
     
+    default:
+    error("UNKNOWN Node Kind(%d) while Genereting code \n", node->kind);
+    exit(1);
+
   }
 
   printf("  push rax\n");
