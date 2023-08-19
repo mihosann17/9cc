@@ -25,8 +25,8 @@ Token *consume_ident() {
 // 次のトークンが""return"なら一つ読み進めて
 // 真を返す
 // それ以外なら偽を返す
-bool consume_return() {
-  if (token->kind != TK_RETURN)
+bool consume_reserved_character(TokenKind kind) {
+  if (token->kind != kind)
     return false;
   token = token->next;
   return true;
@@ -208,7 +208,7 @@ Node *expr() {
 Node *stmt() {
   Node *node;
 
-  if (consume_return()) {
+  if (consume_reserved_character(TK_RETURN)) {
     node = calloc(1, sizeof(Node));
     node->kind = ND_RETURN;
     node->lhs = expr();
