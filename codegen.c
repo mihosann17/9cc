@@ -1,14 +1,6 @@
 #include "9cc.h"
 
-// エラーを報告するための関数
-// printfと同じ引数を取る
-void error(char *fmt, ...) {
-  va_list ap;
-  va_start(ap, fmt);
-  vfprintf(stderr, fmt, ap);
-  fprintf(stderr, "\n");
-  exit(1);
-}
+
 
 void gen_lval(Node *node) {
   if (node->kind != ND_LVAR)
@@ -19,7 +11,42 @@ void gen_lval(Node *node) {
   printf("  push rax\n");
 }
 
+int label_index = 0;
+
 void gen(Node *node){
+  int current_label;
+  switch (node->kind) {
+    case ND_RETURN:
+      gen(node->lhs);
+      printf("  pop rax\n");
+      printf("  mov rsp, rbp\n");
+      printf("  pop rbp\n");
+      printf("  ret\n");
+      return;
+    case ND_IF:
+      current_label = label_index;
+      label_index++;
+
+      // condition
+      gen(node->cond);
+      printf("  pop rax\n");
+      printf("  cmp rax, 0\n");
+      printf("  je .Lelse%d\n", current_label);
+      
+      // body
+      gen(node->body);
+      printf("  jmp .Lend%d\n", current_label);
+
+      // else
+      printf(".Lelse%d:\n", current_label);
+      if (node->els)
+        gen(node->els);
+
+      // end of if statement
+      printf(".Lend%d:\n", current_label);
+      return;
+  }
+
   switch (node->kind) {
   case ND_NUM:
     printf("  push %d\n", node->val);
@@ -81,13 +108,6 @@ void gen(Node *node){
       printf("  setne al\n");
       printf("  movzb rax, al\n");
       break;
-    case ND_RETURN:
-      gen(node->lhs);
-      printf("  pop rax\n");
-      printf("  mov rsp, rbp\n");
-      printf("  pop rbp\n");
-      printf("  ret\n");
-      return;
     
     default:
     error("UNKNOWN Node Kind(%d) while Genereting code \n", node->kind);

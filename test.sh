@@ -89,4 +89,13 @@ assert 5 "a=1;b=2; return a+b * b;"
 assert 1 "return 1; return 3;"
 assert 3 "returna = 3; return returna;"
 
+# if/else
+assert 2 "a=1; if (a==1) return 2; return 3;"
+assert 3 "a=1; if (a!=1) return 2; return 3;"
+assert 2 "a=1; if (a==1) a = a + 1; return a;"
+assert 2 "a=1; if (a==1) return 2; else a = 3; return a;"
+assert 2 "a=3; if (a!=1) return 2; else a = 3; return a;"
+assert 2 "a=1; if (a==1) a=2; else a = 3; return a;"
+
+
 echo OK

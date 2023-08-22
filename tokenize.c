@@ -73,6 +73,12 @@ Token *tokenize(char *p){
         continue;
     }
 
+    if (strncmp(p, "else", 4) == 0 && count_ident_len(p) == 4) {
+      cur = new_token(TK_ELSE, cur, p, 4);
+      p += 4;
+      continue;
+    }
+
     if (strncmp(p, "while", 5) == 0 && count_ident_len(p) == 5) {
         cur = new_token(TK_WHILE, cur, p, 5);
         p += 5;

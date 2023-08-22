@@ -212,12 +212,59 @@ Node *stmt() {
     node = calloc(1, sizeof(Node));
     node->kind = ND_RETURN;
     node->lhs = expr();
+    if (!consume(";"))
+      error_at(token->str, "';'ではないトークンです");
+
+  } else if (consume_reserved_character(TK_IF)) {
+    expect("(");
+    node = calloc(1,sizeof(Node));
+    node->kind = ND_IF;
+    node->cond = expr();
+    expect(")");
+    node->body = stmt();
+
+    if (consume_reserved_character(TK_ELSE)) {
+      node->els = stmt();
+    } else {
+      node->els = NULL;
+    }
+  } else if (consume_reserved_character(TK_WHILE)) {
+    expect("(");
+    node = calloc(1,sizeof(Node));
+    node->kind = ND_WHILE;
+    node->cond = expr();
+    expect(")");
+    node->body = stmt();
+  } else if (consume_reserved_character(TK_FOR)) {
+    expect("(");
+    node = calloc(1,sizeof(Node));
+    node->kind = ND_FOR;
+
+    if (consume(";")) {
+      node->init = NULL;
+    } else {
+      node->init = expr();
+      expect(";");
+    }
+
+    if(consume(";")) {
+      node->cond = NULL;
+    } else {
+      node->cond = expr();
+      expect(";");
+    }
+    
+    if (consume(")")) {
+      node->inc = NULL;
+    } else {
+      node->inc = expr();
+      expect(")");
+    }
   } else {
     node = expr();
+    if (!consume(";"))
+      error_at(token->str, "';'ではないトークンです2");
   }
-
-  if (!consume(";"))
-    error_at(token->str, "';'ではないトークンです");
 
   return node;
 }
