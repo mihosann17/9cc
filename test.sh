@@ -97,5 +97,9 @@ assert 2 "a=1; if (a==1) return 2; else a = 3; return a;"
 assert 2 "a=3; if (a!=1) return 2; else a = 3; return a;"
 assert 2 "a=1; if (a==1) a=2; else a = 3; return a;"
 
+# while
+assert 2 "a=10; while(a) a = a - 1;a+2;"
+assert 7 "a=10; while(a > 5) a = a - 1;a+2;"
+assert 55 "sum=0; i=0; while((i=i+1) <=10) sum = sum + i; return sum;"
 
 echo OK

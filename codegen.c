@@ -45,6 +45,25 @@ void gen(Node *node){
       // end of if statement
       printf(".Lend%d:\n", current_label);
       return;
+    case ND_WHILE:
+      current_label = label_index;
+      label_index++;
+
+      printf(".Lbegin%d:\n", current_label);
+
+      // condition
+      gen(node-> cond);
+      printf("  pop rax\n");
+      printf("  cmp rax, 0\n");
+      printf("  je .Lend%d\n", current_label);
+
+      // body
+      gen(node->body);
+      printf("  jmp .Lbegin%d\n", current_label);
+
+      // end of while statement
+      printf(".Lend%d:\n", current_label);
+      return;
   }
 
   switch (node->kind) {
