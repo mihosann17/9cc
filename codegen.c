@@ -23,6 +23,7 @@ void gen(Node *node){
       printf("  pop rbp\n");
       printf("  ret\n");
       return;
+
     case ND_IF:
       current_label = label_index;
       label_index++;
@@ -45,6 +46,7 @@ void gen(Node *node){
       // end of if statement
       printf(".Lend%d:\n", current_label);
       return;
+
     case ND_WHILE:
       current_label = label_index;
       label_index++;
@@ -64,6 +66,7 @@ void gen(Node *node){
       // end of while statement
       printf(".Lend%d:\n", current_label);
       return;
+
     case ND_FOR:
       current_label = label_index;
       label_index++;
@@ -81,8 +84,7 @@ void gen(Node *node){
       printf("  je .Lend%d\n", current_label);
 
       // body
-      if (node->body)
-        gen(node->body);
+      gen(node->body);
 
       // increment
       if (node->inc)
@@ -92,6 +94,21 @@ void gen(Node *node){
       // end of for statement
       printf(".Lend%d:\n", current_label);
       return;
+
+      case ND_BLOCK:
+      printf("  # -- start block --\n");
+      int i;
+      for (i = 0; i < node->count; i++) {
+        printf("  # -block line(%d)-\n", i);
+        gen(node->stmts[i]);
+
+        // remove result in the middle from stuck
+        if (i < node->count - 1)
+          printf("  pop rax\n");
+      }
+      printf("  # -- end block --\n");
+      return;
+
   }
 
   switch (node->kind) {
