@@ -102,4 +102,9 @@ assert 2 "a=10; while(a) a = a - 1;a+2;"
 assert 7 "a=10; while(a > 5) a = a - 1;a+2;"
 assert 55 "sum=0; i=0; while((i=i+1) <=10) sum = sum + i; return sum;"
 
+# for
+assert 55 "sum=0; for(i=1; i<=10; i=i+1) sum=sum+i;sum;"
+assert 55 "sum=0; i=1; for(; i<=10; i=i+1) sum=sum+i;sum;"
+assert 55 "sum=0; i=0; for(; i<10; ) sum=sum+(i=i+1);sum;"
+
 echo OK

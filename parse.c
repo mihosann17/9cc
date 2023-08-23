@@ -240,6 +240,7 @@ Node *stmt() {
     node = calloc(1,sizeof(Node));
     node->kind = ND_FOR;
 
+    // initialize検出
     if (consume(";")) {
       node->init = NULL;
     } else {
@@ -247,6 +248,7 @@ Node *stmt() {
       expect(";");
     }
 
+    // loop condition検出
     if(consume(";")) {
       node->cond = NULL;
     } else {
@@ -254,16 +256,20 @@ Node *stmt() {
       expect(";");
     }
     
+    // loop increment検出
     if (consume(")")) {
       node->inc = NULL;
     } else {
       node->inc = expr();
       expect(")");
     }
+
+    // body
+    node->body = stmt();
   } else {
     node = expr();
     if (!consume(";"))
-      error_at(token->str, "';'ではないトークンです2");
+      error_at(token->str, "';'ではないトークンです3");
   }
 
   return node;
