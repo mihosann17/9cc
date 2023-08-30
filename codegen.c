@@ -54,10 +54,12 @@ void gen(Node *node){
       printf(".Lbegin%d:\n", current_label);
 
       // condition
-      gen(node-> cond);
-      printf("  pop rax\n");
-      printf("  cmp rax, 0\n");
-      printf("  je .Lend%d\n", current_label);
+      if (node->cond) {
+        gen(node-> cond);
+        printf("  pop rax\n");
+        printf("  cmp rax, 0\n");
+        printf("  je .Lend%d\n", current_label);
+      }
 
       // body
       gen(node->body);
@@ -77,11 +79,12 @@ void gen(Node *node){
       printf(".Lbegin%d:\n", current_label);
 
       // condition
-      if (node->cond)
+      if (node->cond) {
         gen(node->cond);
-      printf("  pop rax\n");
-      printf("  cmp rax, 0\n");
-      printf("  je .Lend%d\n", current_label);
+        printf("  pop rax\n");
+        printf("  cmp rax, 0\n");
+        printf("  je .Lend%d\n", current_label);
+      }
 
       // body
       gen(node->body);
